@@ -5,6 +5,7 @@ authors = ["cympfh <cympfh@gmail.com>"]
 edition = "2018"
 license = "MIT"
 description = "A Grep Tool for HTML or XML"
+homepage = "https://github.com/cympfh/web-grep"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
