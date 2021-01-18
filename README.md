@@ -21,7 +21,7 @@ EOM
 hello
 world
 
-# filtering with attribute
+# filtering with attributes
 $ cat << EOM | web-grep '<p class=here>{}</p>'
 <body>
 <p class="not-here">hello</p>
@@ -54,16 +54,18 @@ This is a just CLI for an awesome library, [tanakh/easy-scraper](https://github.
 
 1. Install cargo
     - Recommended Way: Install [rustup](https://rustup.rs/)
-1. Then, `cargo install web-grep`
+1. Then,
+    - `cargo install web-grep`
 
 ## Usage
 
-```
+```bash
 $ web-grep <query>
 ```
 
-The `query` is HTML pattern.
-Patterns like 
+The `query` is a HTML (XML) Pattern.
+Patterns are valid HTML structures which has exact one placeholder `{}` for innerHTMLs or attributes.
+For example,
 
 ```html
 <p>{}</p>
@@ -75,7 +77,7 @@ Patterns like
 </p>
 ```
 
-`web-grep` outputs all text for `{}`.
+`web-grep` outputs all text matching for `{}`.
 
-(Note: the original library `easy-scraper` use `{{xxx}}` for placeholders, but this CLI use only `{}`)
+**NOTE**: The original library `easy-scraper` uses tagged placeholders (e.g. `{{xxx}}`), but `web-grep` uses only `{}`.
 
