@@ -7,26 +7,31 @@ use easy_scraper::Pattern;
 #[derive(StructOpt)]
 #[structopt(name = "web-grep")]
 struct Opts {
-    #[structopt(name = "query", help = "HTML Pattern Query (e.g. `<p>{}</p>`)", required = true)]
+    #[structopt(
+        name = "QUERY",
+        help = "HTML Pattern Query (e.g. `<p>{}</p>`)",
+        required = true
+    )]
     query: String,
+
+    #[structopt(name = "INPUT", help = "reading file", default_value = "-")]
+    file: String,
 }
 
-fn get_cat() -> String {
+fn cat(file_name: &String) -> String {
+    use std::fs::File;
+    use std::io::BufReader;
+    use std::io::{self, Read};
+
     let mut content = String::new();
-    let mut buffer = String::new();
-    let stdin = std::io::stdin();
-    loop {
-        match stdin.read_line(&mut buffer) {
-            Ok(0) => break,
-            Ok(_) => {
-                content.push_str(&buffer);
-                buffer.clear();
-            }
-            Err(e) => {
-                eprintln!("{}", e);
-                break;
-            }
-        }
+    if file_name == "-" {
+        let stdin = io::stdin();
+        let mut handle = stdin.lock();
+        handle.read_to_string(&mut content).unwrap();
+    } else {
+        let file = File::open(&file_name).unwrap();
+        let mut buf_reader = BufReader::new(file);
+        buf_reader.read_to_string(&mut content).unwrap();
     }
     content
 }
@@ -34,7 +39,7 @@ fn get_cat() -> String {
 fn main() {
     let opt = Opts::from_args();
     let pattern = Pattern::new(opt.query.replace("{}", "{{}}").as_str()).unwrap();
-    let content = get_cat();
+    let content = cat(&opt.file);
     for m in pattern.matches(content.as_str()) {
         if let Some(text) = m.get("") {
             println!("{}", text);
