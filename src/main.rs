@@ -65,13 +65,13 @@ fn replace_holders(query: &String) -> String {
         .to_string()
 }
 
-fn main() {
+fn main() -> Result<(), String> {
     let opt = Opts::from_args();
     let query = replace_holders(&opt.query);
     if opt.debug {
         trace!(query);
     }
-    let pattern = Pattern::new(&query).unwrap();
+    let pattern = Pattern::new(&query)?;
     let content = cat(&opt.file);
     for m in pattern.matches(content.as_str()) {
         if opt.debug {
@@ -104,6 +104,7 @@ fn main() {
             );
         }
     }
+    Ok(())
 }
 
 #[macro_export]
