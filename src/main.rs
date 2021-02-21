@@ -1,3 +1,5 @@
+use std::io::Write;
+
 extern crate structopt;
 use structopt::StructOpt;
 
@@ -78,23 +80,23 @@ fn main() -> Result<(), String> {
             trace!(m);
         }
         if opt.json {
-            println!("{}", serde_json::to_string(&m).unwrap());
+            safe_println!("{}", serde_json::to_string(&m).unwrap());
         } else if let Some(text) = m.get("") {
-            println!("{}", text);
+            safe_println!("{}", text);
         } else if let Some(text) = m.get("1") {
-            print!("{}", text);
+            safe_print!("{}", text);
             for i in 2..1024 {
                 if let Some(text) = m.get(&i.to_string()) {
-                    print!("{}{}", opt.fs, text);
+                    safe_print!("{}{}", opt.fs, text);
                 } else {
-                    println!();
+                    safe_println!();
                     break;
                 }
             }
         } else {
             let mut keys: Vec<_> = m.keys().collect();
             keys.sort();
-            println!(
+            safe_println!(
                 "{}",
                 keys.iter()
                     .map(|&key| m.get(key).unwrap())
@@ -113,4 +115,26 @@ macro_rules! trace {
         eprintln!(">>> {} = {:?}", stringify!($x), $x)
     };
     ($($xs:expr),*) => { trace!(($($xs),*)) }
+}
+
+#[macro_export]
+macro_rules! safe_print {
+    ($( $args:expr ),* ) => {
+        let mut stdout = std::io::stdout();
+        let res = write!(&mut stdout, $( $args ),*);
+        if res.is_err() {
+            std::process::exit(0);
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! safe_println {
+    () => {
+        safe_print!("\n");
+    };
+    ($($args:expr),*) => {
+        safe_print!($($args),*);
+        safe_print!("\n");
+    }
 }
