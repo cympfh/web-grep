@@ -2,7 +2,7 @@
 
 ## What this?
 
-Grep for HTML or XML.
+Grep tool for **HTML**
 
 ```bash
 $ echo '<a>Hello</a>' | web-grep '<a>{}</a>'
